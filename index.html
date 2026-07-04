@@ -194,6 +194,22 @@
   .dots i:nth-child(2){animation-delay:.15s}.dots i:nth-child(3){animation-delay:.3s}
   @keyframes bounce{0%,60%,100%{transform:translateY(0);opacity:.4}30%{transform:translateY(-5px);opacity:1}}
 
+  /* ---------- COLD LEADS ---------- */
+  .leadsGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(244px,1fr));gap:12px;padding:16px}
+  .leadsEmpty{grid-column:1/-1;padding:28px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--txt-dim);line-height:1.6}
+  .lc{background:var(--panel-2);border:1px solid var(--line);border-radius:12px;padding:13px 14px;transition:.16s}
+  .lc:hover{border-color:var(--line-hot);transform:translateY(-1px)}
+  .lc-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:7px}
+  .lc-name{font-family:'Space Grotesk',sans-serif;font-size:13.5px;font-weight:600;color:var(--txt-hi);line-height:1.3}
+  .lc-tag{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--ice);border:1px solid rgba(90,169,255,.3);border-radius:5px;padding:2px 6px;white-space:nowrap;flex-shrink:0}
+  .lc-meta{font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--amber);margin-bottom:9px}
+  .lc-contact{font-size:12px;margin-bottom:7px;word-break:break-all}
+  .lc-email{color:var(--cyan);text-decoration:none}.lc-email:hover{text-decoration:underline}
+  .lc-none{color:var(--txt-dim);font-family:'JetBrains Mono',monospace;font-size:10.5px}
+  .lc-row{display:flex;align-items:center;justify-content:space-between;gap:8px}
+  .lc-phone{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--txt)}
+  .lc-site{font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--cyan-dim);text-decoration:none}.lc-site:hover{color:var(--cyan)}
+
   .banner{position:fixed;top:0;left:0;right:0;z-index:200;background:rgba(255,179,71,.14);border-bottom:1px solid rgba(255,179,71,.4);
     color:#FFD79A;font-family:'JetBrains Mono',monospace;font-size:12px;padding:10px 16px;text-align:center;display:none}
 
@@ -309,6 +325,12 @@
         <p id="brief-body">Reading your pipeline…</p>
         <div class="note">The AI-written version arrives once your n8n automations are connected. For now this is a live summary of your real numbers.</div>
       </div>
+
+      <!-- COLD LEADS -->
+      <div class="panel" style="margin-bottom:20px">
+        <div class="head"><h2>Cold leads</h2><span class="tag" id="leadsCount">0 leads</span></div>
+        <div class="leadsGrid" id="leadsGrid"></div>
+      </div>
     </div>
 
     <div class="dock">
@@ -341,7 +363,12 @@ import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js
              Flip to false + paste your anon key for the
              final push to production.
    ============================================================ */
-const DEV_MODE = true;
+const DEV_MODE = false;
+
+/* REQUIRE_LOGIN — when false, the dashboard loads your live data with no
+   login screen (relies on the anon-read policy you'll add in Supabase).
+   Flip to true for the production launch to lock it behind a login. */
+const REQUIRE_LOGIN = false;
 
 /* CONFIG — only needed when DEV_MODE is false.
    Your URL is already set. The anon (publishable) key is the
@@ -356,7 +383,7 @@ const CHAT_WEBHOOK_URL = 'https://staggsb1.app.n8n.cloud/webhook/dashboard-comma
 
 /* Lead-gen engine → Apify → Supabase. Paste the scrape workflow's
    webhook URL here after you import and publish it. */
-const SCRAPE_WEBHOOK_URL = 'https://staggsb1.app.n8n.cloud/webhook/scrape-leads';
+const SCRAPE_WEBHOOK_URL = 'PASTE_YOUR_SCRAPE_WEBHOOK_URL_HERE';
 
 const banner = document.getElementById('banner');
 function showBanner(msg){ banner.textContent = msg; banner.style.display = 'block'; }
@@ -365,7 +392,7 @@ let supabase;
 if (!DEV_MODE) {
   try {
     if (SUPABASE_ANON_KEY.startsWith('PASTE_')) {
-      showBanner('Almost there — set DEV_MODE to false only after pasting your Supabase anon key into the CONFIG section, then reload.');
+      showBanner('Paste your Supabase anon / publishable key into SUPABASE_ANON_KEY near the top of this file to load your live data.');
     }
     supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
   } catch (e) {
@@ -500,6 +527,11 @@ async function loadData(){
     document.getElementById('brief-stamp').textContent = `${h}:${p(d.getMinutes())} ${ap}`;
     document.getElementById('brief-body').innerHTML = buildBrief({funnel,cold,warm,clientCount,sentN,bookedN});
 
+    // cold leads → cards
+    const { data: coldLeads } = await supabase
+      .from('leads').select('*').eq('status','cold').order('created_at',{ascending:false}).limit(60);
+    renderLeads(coldLeads);
+
   } catch (err) {
     showBanner('Data load failed: ' + (err.message || err) + ' — check that the schema ran and your key is correct.');
   }
@@ -507,6 +539,30 @@ async function loadData(){
 
 /* ---------- helpers ---------- */
 function esc(s){ return String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+function renderLeads(leads){
+  const grid = document.getElementById('leadsGrid');
+  const countEl = document.getElementById('leadsCount');
+  leads = leads || [];
+  if(countEl) countEl.textContent = leads.length + (leads.length === 1 ? ' lead' : ' leads');
+  if(!grid) return;
+  if(leads.length === 0){
+    grid.innerHTML = '<div class="leadsEmpty">No cold leads yet.<br>Type a scrape command like "Scrape HVAC in Peoria AZ" to fill this in.</div>';
+    return;
+  }
+  grid.innerHTML = leads.map(leadCard).join('');
+}
+function leadCard(l){
+  const meta = [ (l.google_rating!=null?('★ '+l.google_rating):''), (l.google_reviews!=null?(l.google_reviews+' reviews'):'') ].filter(Boolean).join('  ·  ');
+  const email = l.email ? `<a href="mailto:${esc(l.email)}" class="lc-email">${esc(l.email)}</a>` : '<span class="lc-none">no email found</span>';
+  const phone = l.phone ? `<span class="lc-phone">${esc(l.phone)}</span>` : '<span></span>';
+  const site = l.website ? `<a href="${esc(l.website)}" target="_blank" rel="noopener" class="lc-site">website ↗</a>` : '';
+  return `<div class="lc">
+    <div class="lc-top"><span class="lc-name">${esc(l.business_name || 'Unknown')}</span>${l.industry?`<span class="lc-tag">${esc(labelIndustry(l.industry))}</span>`:''}</div>
+    ${meta?`<div class="lc-meta">${meta}</div>`:''}
+    <div class="lc-contact">${email}</div>
+    <div class="lc-row">${phone}${site}</div>
+  </div>`;
+}
 function labelIndustry(i){ const m={hvac:'HVAC',chiro:'Chiro',med_spa:'Med Spa',dental:'Dental',gym:'Gym',salon:'Salon',pest:'Pest',hardscape:'Hardscape'}; return m[i] || (i||'Client'); }
 function prettyType(t){ return (t||'').replace(/_/g,' '); }
 function feedClass(t){ if(t?.includes('reply'))return'rp'; if(t?.includes('sent'))return'se'; if(t?.includes('voicemail'))return'vm'; if(t?.includes('booked'))return'bk'; return'im'; }
@@ -572,6 +628,11 @@ function loadSampleData(){
   document.getElementById('brief-stamp').textContent = `${h}:${p(d.getMinutes())} ${ap}`;
   document.getElementById('brief-body').innerHTML = buildBrief({funnel,cold,warm,clientCount,sentN,bookedN});
   document.querySelector('.brief .note').textContent = 'Sample data — DEV_MODE is on. Flip it off and paste your key to read live Supabase data.';
+  renderLeads([
+    {business_name:'Peoria Comfort HVAC', industry:'hvac', google_rating:4.9, google_reviews:12, email:'info@peoriacomfort.com', phone:'(623) 555-0142', website:'https://example.com'},
+    {business_name:'Goodyear Air Pros', industry:'hvac', google_rating:4.7, google_reviews:8, email:null, phone:'(623) 555-0177', website:'https://example.com'},
+    {business_name:'West Valley Wellness', industry:'med_spa', google_rating:5.0, google_reviews:5, email:'hello@wvwellness.com', phone:null, website:'https://example.com'}
+  ]);
 }
 
 /* ---------- command console → Claude ---------- */
@@ -635,6 +696,7 @@ document.querySelectorAll('.chip').forEach(c => c.addEventListener('click', () =
 
 /* ---------- boot ---------- */
 if (DEV_MODE) enterApp();
+else if (!REQUIRE_LOGIN) enterApp();
 else checkSession();
 </script>
 </body>
