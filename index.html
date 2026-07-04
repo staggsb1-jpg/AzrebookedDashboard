@@ -194,7 +194,49 @@
   .dots i:nth-child(2){animation-delay:.15s}.dots i:nth-child(3){animation-delay:.3s}
   @keyframes bounce{0%,60%,100%{transform:translateY(0);opacity:.4}30%{transform:translateY(-5px);opacity:1}}
 
-  /* ---------- COLD LEADS ---------- */
+  /* ---------- VIEW SWITCHING ---------- */
+  .view{display:none}
+  .view.on{display:block;animation:viewIn .25s ease}
+  @keyframes viewIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  .view-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:18px;flex-wrap:wrap}
+  .view-title{font-family:'Space Grotesk',sans-serif;font-size:22px;font-weight:600;color:var(--txt-hi);letter-spacing:-.01em}
+  .view-sub{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.08em;color:var(--txt-dim);margin-top:5px;text-transform:uppercase}
+  .leadsearch{background:var(--panel);border:1px solid var(--line-hot);border-radius:11px;color:var(--txt-hi);font-family:'Inter',sans-serif;font-size:13px;padding:11px 15px;width:260px;outline:none;transition:.18s}
+  .leadsearch:focus{border-color:var(--cyan-deep);box-shadow:0 0 0 1px rgba(0,229,255,.2)}
+  .leadsearch::placeholder{color:var(--txt-dim)}
+
+  .catchips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
+  .catchip{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.05em;color:var(--txt);border:1px solid var(--line-hot);background:var(--panel);padding:7px 13px;border-radius:999px;cursor:pointer;transition:.16s;text-transform:capitalize}
+  .catchip:hover{color:var(--cyan);border-color:var(--cyan-deep)}
+  .catchip.on{color:#03181d;background:linear-gradient(135deg,var(--cyan),var(--cyan-dim));border-color:transparent;font-weight:600}
+  .catchip .n{opacity:.7;margin-left:5px}
+
+  .catgroup{margin-bottom:26px}
+  .catgroup-head{display:flex;align-items:center;gap:11px;margin-bottom:13px}
+  .catgroup-head .dot{width:8px;height:8px;border-radius:50%;background:var(--ice);box-shadow:0 0 9px -1px var(--ice)}
+  .catgroup-head h3{font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:600;color:var(--txt-hi);text-transform:capitalize}
+  .catgroup-head .cnt{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--txt-dim)}
+  .catgroup-head .line{flex:1;height:1px;background:var(--line)}
+
+  /* ---------- PLACEHOLDER PAGES ---------- */
+  .placeholder{background:linear-gradient(180deg,var(--panel),var(--panel-2));border:1px solid var(--line);border-radius:var(--radius);padding:54px 40px;text-align:center;max-width:620px;margin:20px auto}
+  .placeholder .ph-ic{width:40px;height:40px;stroke:var(--cyan-dim);fill:none;stroke-width:1.4;margin-bottom:18px;opacity:.8}
+  .placeholder h3{font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:600;color:var(--txt-hi);margin-bottom:12px}
+  .placeholder p{font-size:13.5px;line-height:1.65;color:var(--txt);max-width:440px;margin:0 auto 12px}
+  .placeholder .ph-note{font-size:12.5px;color:var(--txt-dim);border-top:1px solid var(--line);padding-top:14px;margin-top:16px}
+  .placeholder .ph-note b{color:var(--txt)}
+  .placeholder .ph-tag{display:inline-block;margin-top:18px;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--cyan-dim);border:1px solid var(--cyan-deep);border-radius:999px;padding:6px 14px}
+
+  /* ---------- DOCK MINIMIZE ---------- */
+  .dockbar{display:none;align-items:center;justify-content:space-between;margin-bottom:11px}
+  .dockbar-title{display:flex;align-items:center;gap:8px;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--txt-dim)}
+  .dockdot{width:7px;height:7px;border-radius:50%;background:var(--cyan);box-shadow:0 0 9px -1px var(--cyan)}
+  .dockmin{width:30px;height:30px;border-radius:8px;display:grid;place-items:center;background:transparent;border:1px solid var(--line-hot);color:var(--txt);cursor:pointer;transition:.16s}
+  .dockmin:hover{color:var(--cyan);border-color:var(--cyan-deep)}
+  .dockmin svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2}
+  .dock .dockbar{display:flex}
+  .dock.min .dockbody{display:none}
+  .dock.min .ic-min{transform:rotate(180deg)}
   .leadsGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(244px,1fr));gap:12px;padding:16px}
   .leadsEmpty{grid-column:1/-1;padding:28px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--txt-dim);line-height:1.6}
   .lc{background:var(--panel-2);border:1px solid var(--line);border-radius:12px;padding:13px 14px;transition:.16s}
@@ -243,13 +285,14 @@
   <aside class="rail">
     <div class="mark"></div>
     <nav class="nav">
-      <a class="on"><span class="tip">Overview</span><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></a>
-      <a><span class="tip">Cold Leads</span><svg viewBox="0 0 24 24"><path d="M12 3v18M5 8l7-5 7 5M5 16l7 5 7-5"/></svg></a>
-      <a><span class="tip">Warm Sequences</span><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10"/></svg></a>
-      <a><span class="tip">Campaigns</span><svg viewBox="0 0 24 24"><path d="M3 11l18-8-8 18-2-8-8-2z"/></svg></a>
-      <a><span class="tip">Booked Calls</span><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg></a>
-      <a><span class="tip">Clients</span><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg></a>
-      <a><span class="tip">Social</span><svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 10.5l6.8-4M8.6 13.5l6.8 4"/></svg></a>
+      <a class="on" data-view="overview"><span class="tip">Overview</span><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></a>
+      <a data-view="cold"><span class="tip">Cold Leads</span><svg viewBox="0 0 24 24"><path d="M12 3v18M5 8l7-5 7 5M5 16l7 5 7-5"/></svg></a>
+      <a data-view="facebook"><span class="tip">Facebook Leads</span><svg viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg></a>
+      <a data-view="warm"><span class="tip">Warm Sequences</span><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10"/></svg></a>
+      <a data-view="campaigns"><span class="tip">Campaigns</span><svg viewBox="0 0 24 24"><path d="M3 11l18-8-8 18-2-8-8-2z"/></svg></a>
+      <a data-view="booked"><span class="tip">Booked Calls</span><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg></a>
+      <a data-view="clients"><span class="tip">Clients</span><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg></a>
+      <a data-view="social"><span class="tip">Social</span><svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 10.5l6.8-4M8.6 13.5l6.8 4"/></svg></a>
     </nav>
     <div class="foot">
       <button class="logout" id="logoutBtn"><span class="tip">Sign out</span><svg viewBox="0 0 24 24"><path d="M16 17l5-5-5-5M21 12H9M12 19H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h7"/></svg></button>
@@ -270,6 +313,7 @@
     </div>
 
     <div class="scroll">
+      <section class="view on" data-view="overview">
       <div class="metrics">
         <div class="card">
           <div class="k"><svg class="ic" viewBox="0 0 24 24"><path d="M12 3v18M5 8l7-5 7 5"/></svg>In funnel</div>
@@ -326,14 +370,68 @@
         <div class="note">The AI-written version arrives once your n8n automations are connected. For now this is a live summary of your real numbers.</div>
       </div>
 
-      <!-- COLD LEADS -->
+      <!-- COLD LEADS (compact preview on overview) -->
       <div class="panel" style="margin-bottom:20px">
         <div class="head"><h2>Cold leads</h2><span class="tag" id="leadsCount">0 leads</span></div>
         <div class="leadsGrid" id="leadsGrid"></div>
       </div>
+      </section>
+
+      <!-- ===================== COLD LEADS PAGE ===================== -->
+      <section class="view" data-view="cold">
+        <div class="view-head">
+          <div><h1 class="view-title">Cold Leads</h1><div class="view-sub" id="coldTotal">0 total</div></div>
+          <input class="leadsearch" id="leadSearch" type="text" placeholder="Search businesses…">
+        </div>
+        <div class="catchips" id="catChips"></div>
+        <div id="coldCategorized"></div>
+      </section>
+
+      <!-- ===================== FACEBOOK LEADS PAGE ===================== -->
+      <section class="view" data-view="facebook">
+        <div class="view-head">
+          <div><h1 class="view-title">Facebook Leads</h1><div class="view-sub">Meta scrapers &amp; the opportunity feed</div></div>
+        </div>
+        <div class="placeholder">
+          <svg class="ph-ic" viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+          <h3>Your Meta scraping bay</h3>
+          <p>This is where Facebook lead tools will live. When we build the Meta scrapers, this page holds them, and any opportunities they surface, so it's all in one place, separate from your Google Maps cold leads.</p>
+          <p class="ph-note">Reminder from earlier: this is a <b>listening post</b>, not a blasting cannon. It scans local groups for buying signals and drafts openers you send yourself as a human. No auto-posting.</p>
+          <div class="ph-tag">Coming next</div>
+        </div>
+      </section>
+
+      <!-- ===================== PLACEHOLDER PAGES ===================== -->
+      <section class="view" data-view="warm">
+        <div class="view-head"><div><h1 class="view-title">Warm Sequences</h1><div class="view-sub">Leads in an active sequence</div></div></div>
+        <div class="placeholder"><svg class="ph-ic" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10"/></svg><h3>Nothing warming up yet</h3><p>When you move cold leads into an outreach sequence, they'll track here. This is the email/SMS follow-up engine we build after lead gen.</p><div class="ph-tag">Coming next</div></div>
+      </section>
+      <section class="view" data-view="campaigns">
+        <div class="view-head"><div><h1 class="view-title">Campaigns</h1><div class="view-sub">Email, SMS &amp; voicemail runs</div></div></div>
+        <div class="placeholder"><svg class="ph-ic" viewBox="0 0 24 24"><path d="M3 11l18-8-8 18-2-8-8-2z"/></svg><h3>No campaigns yet</h3><p>Once the email engine is wired, your win-back sends and their performance land here.</p><div class="ph-tag">Coming next</div></div>
+      </section>
+      <section class="view" data-view="booked">
+        <div class="view-head"><div><h1 class="view-title">Booked Calls</h1><div class="view-sub">Prospects on your calendar</div></div></div>
+        <div class="placeholder"><svg class="ph-ic" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg><h3>No calls booked yet</h3><p>Calendly bookings and demo calls will show up here as they come in.</p><div class="ph-tag">Coming next</div></div>
+      </section>
+      <section class="view" data-view="clients">
+        <div class="view-head"><div><h1 class="view-title">Clients</h1><div class="view-sub">Converted &amp; paying</div></div></div>
+        <div class="placeholder"><svg class="ph-ic" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg><h3>Client roster</h3><p>Your active clients (the ones in the Clients Won marquee) get a full management view here.</p><div class="ph-tag">Coming next</div></div>
+      </section>
+      <section class="view" data-view="social">
+        <div class="view-head"><div><h1 class="view-title">Social</h1><div class="view-sub">Scheduled marketing posts</div></div></div>
+        <div class="placeholder"><svg class="ph-ic" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 10.5l6.8-4M8.6 13.5l6.8 4"/></svg><h3>Post scheduler</h3><p>Your weekly social posts and their schedule will live here.</p><div class="ph-tag">Coming next</div></div>
+      </section>
     </div>
 
-    <div class="dock">
+    <div class="dock" id="dock">
+      <div class="dockbar">
+        <span class="dockbar-title"><span class="dockdot"></span>Agent</span>
+        <button class="dockmin" id="dockMin" title="Minimize" aria-label="Minimize agent">
+          <svg class="ic-min" viewBox="0 0 24 24"><path d="M6 15l6-6 6 6"/></svg>
+        </button>
+      </div>
+      <div class="dockbody" id="dockBody">
       <div class="console" id="console"></div>
       <div class="chips">
         <span class="chip">Scrape HVAC in Peoria AZ under 25 reviews</span>
@@ -346,6 +444,7 @@
         <input id="cmd" type="text" placeholder="Tell the agent what to do…" aria-label="Command the agent">
         <button class="mic" title="Voice command (coming soon)" aria-label="Voice command"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M6 11a6 6 0 0 0 12 0M12 17v4"/></svg></button>
         <button class="send" id="sendBtn" title="Run" aria-label="Run command"><svg viewBox="0 0 24 24"><path d="M4 12h14M12 5l7 7-7 7"/></svg></button>
+      </div>
       </div>
     </div>
   </div>
@@ -375,7 +474,7 @@ const REQUIRE_LOGIN = false;
    PUBLIC one from Supabase → Settings → API. It is safe in the
    browser: your RLS policies are what actually protect the data. */
 const SUPABASE_URL = 'https://kaadsmgwxrrouvmtplep.supabase.co';
-const SUPABASE_ANON_KEY = 'sb_publishable_U6hwVFhoNxXSJYqqXlYqig_FQd5Xbja';
+const SUPABASE_ANON_KEY = 'PASTE_YOUR_ANON_PUBLISHABLE_KEY_HERE';
 
 /* Command bar → Claude. Paste your n8n webhook URL here after you
    import and publish the workflow. Works in dev and production. */
@@ -539,17 +638,79 @@ async function loadData(){
 
 /* ---------- helpers ---------- */
 function esc(s){ return String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
-function renderLeads(leads){
-  const grid = document.getElementById('leadsGrid');
-  const countEl = document.getElementById('leadsCount');
-  leads = leads || [];
-  if(countEl) countEl.textContent = leads.length + (leads.length === 1 ? ' lead' : ' leads');
-  if(!grid) return;
-  if(leads.length === 0){
-    grid.innerHTML = '<div class="leadsEmpty">No cold leads yet.<br>Type a scrape command like "Scrape HVAC in Peoria AZ" to fill this in.</div>';
+
+/* ---------- view router ---------- */
+let ALL_COLD = [];      // cached cold leads for the Cold Leads page
+let CAT_FILTER = 'all'; // active category chip
+
+function showView(name){
+  document.querySelectorAll('.view').forEach(v => v.classList.toggle('on', v.dataset.view === name));
+  document.querySelectorAll('.nav a').forEach(a => a.classList.toggle('on', a.dataset.view === name));
+  if(name === 'cold') renderColdPage();
+  document.querySelector('.scroll').scrollTop = 0;
+}
+document.querySelectorAll('.nav a[data-view]').forEach(a => {
+  a.addEventListener('click', e => { e.preventDefault(); showView(a.dataset.view); });
+});
+
+/* ---------- Cold Leads page: self-categorized by industry ---------- */
+function renderColdPage(){
+  const wrap = document.getElementById('coldCategorized');
+  const total = document.getElementById('coldTotal');
+  const search = (document.getElementById('leadSearch')?.value || '').toLowerCase().trim();
+  if(total) total.textContent = ALL_COLD.length + ' total';
+  if(!wrap) return;
+
+  // build category chips from the data
+  const counts = {};
+  ALL_COLD.forEach(l => { const k = l.industry || 'other'; counts[k] = (counts[k]||0)+1; });
+  const chipWrap = document.getElementById('catChips');
+  if(chipWrap){
+    const cats = Object.keys(counts).sort();
+    chipWrap.innerHTML = `<span class="catchip ${CAT_FILTER==='all'?'on':''}" data-cat="all">All<span class="n">${ALL_COLD.length}</span></span>` +
+      cats.map(c => `<span class="catchip ${CAT_FILTER===c?'on':''}" data-cat="${esc(c)}">${esc(labelIndustry(c))}<span class="n">${counts[c]}</span></span>`).join('');
+    chipWrap.querySelectorAll('.catchip').forEach(ch => ch.addEventListener('click', () => { CAT_FILTER = ch.dataset.cat; renderColdPage(); }));
+  }
+
+  // filter
+  let rows = ALL_COLD.slice();
+  if(CAT_FILTER !== 'all') rows = rows.filter(l => (l.industry||'other') === CAT_FILTER);
+  if(search) rows = rows.filter(l => (l.business_name||'').toLowerCase().includes(search) || (l.city||'').toLowerCase().includes(search));
+
+  if(rows.length === 0){
+    wrap.innerHTML = '<div class="leadsEmpty" style="padding:40px">No leads match. Try a scrape command, or clear the search.</div>';
     return;
   }
-  grid.innerHTML = leads.map(leadCard).join('');
+
+  // group by industry
+  const groups = {};
+  rows.forEach(l => { const k = l.industry || 'other'; (groups[k] = groups[k] || []).push(l); });
+  wrap.innerHTML = Object.keys(groups).sort().map(cat => `
+    <div class="catgroup">
+      <div class="catgroup-head"><span class="dot"></span><h3>${esc(labelIndustry(cat))}</h3><span class="cnt">${groups[cat].length}</span><span class="line"></span></div>
+      <div class="leadsGrid" style="padding:0">${groups[cat].map(leadCard).join('')}</div>
+    </div>`).join('');
+}
+document.getElementById('leadSearch')?.addEventListener('input', renderColdPage);
+
+/* ---------- dock minimize ---------- */
+document.getElementById('dockMin')?.addEventListener('click', () => {
+  document.getElementById('dock').classList.toggle('min');
+});
+
+function renderLeads(leads){
+  ALL_COLD = leads || [];
+  const grid = document.getElementById('leadsGrid');
+  const countEl = document.getElementById('leadsCount');
+  const leadsP = ALL_COLD.slice(0, 8); // compact preview on overview
+  if(countEl) countEl.textContent = ALL_COLD.length + (ALL_COLD.length === 1 ? ' lead' : ' leads');
+  if(grid){
+    grid.innerHTML = ALL_COLD.length === 0
+      ? '<div class="leadsEmpty">No cold leads yet.<br>Type a scrape command like "Scrape HVAC in Peoria AZ" to fill this in.</div>'
+      : leadsP.map(leadCard).join('');
+  }
+  // if the Cold Leads page is currently open, refresh it too
+  if(document.querySelector('.view[data-view="cold"]')?.classList.contains('on')) renderColdPage();
 }
 function leadCard(l){
   const meta = [ (l.google_rating!=null?('★ '+l.google_rating):''), (l.google_reviews!=null?(l.google_reviews+' reviews'):'') ].filter(Boolean).join('  ·  ');
