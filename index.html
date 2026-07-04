@@ -314,10 +314,10 @@
     <div class="dock">
       <div class="console" id="console"></div>
       <div class="chips">
+        <span class="chip">Scrape HVAC in Peoria AZ under 25 reviews</span>
         <span class="chip">Draft a win-back email for Valley Med Spa</span>
         <span class="chip">Write a 90-day dormant SMS for an HVAC client</span>
         <span class="chip">Give me 3 subject lines for a reactivation email</span>
-        <span class="chip">Outline a 3-touch win-back sequence</span>
       </div>
       <div class="cmd">
         <span class="prompt">›</span>
@@ -353,6 +353,10 @@ const SUPABASE_ANON_KEY = 'PASTE_YOUR_ANON_PUBLISHABLE_KEY_HERE';
 /* Command bar → Claude. Paste your n8n webhook URL here after you
    import and publish the workflow. Works in dev and production. */
 const CHAT_WEBHOOK_URL = 'https://staggsb1.app.n8n.cloud/webhook/dashboard-command';
+
+/* Lead-gen engine → Apify → Supabase. Paste the scrape workflow's
+   webhook URL here after you import and publish it. */
+const SCRAPE_WEBHOOK_URL = 'PASTE_YOUR_SCRAPE_WEBHOOK_URL_HERE';
 
 const banner = document.getElementById('banner');
 function showBanner(msg){ banner.textContent = msg; banner.style.display = 'block'; }
@@ -581,6 +585,7 @@ function addMsg(who, text, cls){
   el.innerHTML = `<span class="who">${who}</span>`;
   const body = document.createElement('span');
   if(text === '__thinking__'){ body.innerHTML = '<span class="dots"><i></i><i></i><i></i></span>'; }
+  else if(text === '__scanning__'){ body.innerHTML = 'Scanning Google Maps, this can take a minute <span class="dots"><i></i><i></i><i></i></span>'; }
   else { body.textContent = text; }
   el.appendChild(body);
   consoleEl.appendChild(el);
@@ -593,20 +598,28 @@ async function sendCommand(){
   if(!text) return;
   addMsg('You', text, 'you');
   cmdInput.value = '';
-  const thinking = addMsg('Agent', '__thinking__', 'ai');
 
-  if(CHAT_WEBHOOK_URL.startsWith('PASTE_')){
-    thinking.textContent = "I'm not wired to Claude yet. Import the n8n workflow, publish it, then paste its webhook URL into CHAT_WEBHOOK_URL near the top of this file.";
+  // route: scrape-style commands go to the lead-gen engine, everything else to chat
+  const isScrape = /\b(scrape|pull|find|get)\b/i.test(text) &&
+                   /\b(lead|leads|hvac|chiro|dental|spa|spas|gym|gyms|salon|salons|pest|business|businesses|compan)/i.test(text);
+  const url = isScrape ? SCRAPE_WEBHOOK_URL : CHAT_WEBHOOK_URL;
+
+  const thinking = addMsg('Agent', isScrape ? '__scanning__' : '__thinking__', 'ai');
+
+  if(url.startsWith('PASTE_')){
+    thinking.textContent = isScrape
+      ? "The lead-gen engine isn't connected yet. Import the scrape workflow, publish it, and paste its webhook URL into SCRAPE_WEBHOOK_URL near the top of this file."
+      : "I'm not wired to Claude yet. Paste your chat webhook URL into CHAT_WEBHOOK_URL near the top of this file.";
     return;
   }
   try{
-    const res = await fetch(CHAT_WEBHOOK_URL, {
+    const res = await fetch(url, {
       method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({ message: text })
     });
     if(!res.ok) throw new Error('Agent responded with status ' + res.status);
     const data = await res.json();
-    thinking.textContent = data.reply || data.output || data.text || 'No reply came back. Check the n8n workflow output.';
+    thinking.textContent = data.reply || data.output || data.text || 'No reply came back. Check the workflow output.';
   }catch(e){
     thinking.textContent = 'Could not reach the agent: ' + e.message;
   }
